@@ -1,0 +1,50 @@
+<persistence
+	version="2.0" 
+	xmlns="http://java.sun.com/xml/ns/persistence" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence 
+						http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+
+<!-- 
+<persistence
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+						http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+	version="2.1">
+-->
+	
+	<!-- 
+		xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+		...
+		xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd" 
+	-->
+	<!-- 
+		javax.xml.bind.UnmarshalException: 
+		unexpected element (uri:"http://xmlns.jcp.org/xml/ns/persistence", local:"persistence"). 
+		Expected elements are <{http://java.sun.com/xml/ns/persistence}persistence
+	 -->
+
+	<persistence-unit name="unibratec"  transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		
+		<properties>
+			<property name="javax.persistence.jdbc.driver"			value="com.mysql.jdbc.Driver" />
+			<property name="javax.persistence.jdbc.url"				value="jdbc:mysql://localhost:3306/unibratec"/>
+			<property name="javax.persistence.jdbc.user"			value="root" />
+			<property name="javax.persistence.jdbc.password"		value="" />
+			
+			<property name="hibernate.dialect"						value="org.hibernate.dialect.MySQLDialect" />
+			<property name="hibernate.show_sql"						value="true" />
+			<property name="hibernate.format_sql"					value="true" />
+			<property name="hibernate.hbm2ddl.auto"					value="create" />
+			
+			<!--
+			<property name="hibernate.cache.region.factory_class"	value="net.sf.ehcache.hibernate.EhCacheRegionFactory"/>
+			<property name="hibernate.cache.use_query_cahce"		value="true"/>
+			 -->	
+		</properties>
+	</persistence-unit>
+</persistence>
