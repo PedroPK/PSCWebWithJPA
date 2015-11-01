@@ -1,5 +1,7 @@
 package br.unibratec.linhasaereas.fachada;
 
+import java.util.Collection;
+
 import br.unibratec.linhasaereas.controladores.ControladorPassageiro;
 import br.unibratec.linhasaereas.controladores.IControladorPassageiro;
 import br.unibratec.linhasaereas.entidades.Passageiro;
@@ -21,11 +23,15 @@ public class FachadaLinhasAereas implements IFachadaLinhasAereas {
 		IControladorPassageiro controladorPassageiro = new ControladorPassageiro();
 		controladorPassageiro.inserir(pPassageiro);
 	}
-
-	@Override
+	
 	public void consultarPassageiro(Object pChavePrimariaPassageiro) {
 		IControladorPassageiro controladorPassageiro = new ControladorPassageiro();
 		controladorPassageiro.consultar(pChavePrimariaPassageiro);
+	}
+	
+	public Collection<Passageiro> consultar() {
+		IControladorPassageiro controladorPassageiro = new ControladorPassageiro();
+		return controladorPassageiro.consultar();
 	}
 	
 }

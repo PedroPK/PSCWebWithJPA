@@ -1,7 +1,10 @@
 package br.unibratec.persistencia;
 
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.TypedQuery;
 
 import br.unibratec.entidades.Entidade;
 import br.unibratec.util.UtilJPA;
@@ -9,7 +12,7 @@ import br.unibratec.util.UtilJPA;
 public abstract class AbstractDAO implements InterfaceDAO {
 	
 	/*
-	 * Versão anterior do método abaixo
+	 * Versï¿½o anterior do mï¿½todo abaixo
 	 * 
 	 * 
 	public void inserir(Entidade pEntidade) {
@@ -35,7 +38,7 @@ public abstract class AbstractDAO implements InterfaceDAO {
 	}
 	
 	/*
-	 * Versão anterior do método abaixo
+	 * Versï¿½o anterior do mï¿½todo abaixo
 	 * 
 	 * 
 	public void alterar(Entidade pEntidade) {
@@ -66,7 +69,7 @@ public abstract class AbstractDAO implements InterfaceDAO {
 	}
 	
 	/*
-	 * Versão anterior do método abaixo
+	 * Versï¿½o anterior do mï¿½todo abaixo
 	 * 
 	 * 
 	public void excluirPorObjeto(Class pClasse, Entidade pEntidade) {
@@ -128,7 +131,7 @@ public abstract class AbstractDAO implements InterfaceDAO {
 	}
 	
 	/*
-	 * Versão anterior do método abaixo
+	 * Versï¿½o anterior do mï¿½todo abaixo
 	 * 
 	 * 
 	public void excluirPorChavePrimaria(Class pClasse, Object pChavePrimaria) {
@@ -183,7 +186,7 @@ public abstract class AbstractDAO implements InterfaceDAO {
 	}
 	
 	/*
-	 * Versão anterior do método abaixo
+	 * Versï¿½o anterior do mï¿½todo abaixo
 	 * 
 	 * 
 	public Object consultar(Class pClasse, Object pPrimaryKey) {
@@ -208,7 +211,6 @@ public abstract class AbstractDAO implements InterfaceDAO {
 		return registro;
 	}
 	
-
 	/*
 	 * (non-Javadoc)
 	 * @see br.unibratec.persistencia.InterfaceDAO#consultarPorObjeto(br.unibratec.entidades.Entidade)
@@ -224,6 +226,15 @@ public abstract class AbstractDAO implements InterfaceDAO {
 		}
 		
 		return registro;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Collection consultarNamedQuery(String pNamedQuery, Class pTipoRetorno) {
+		EntityManager manager = UtilJPA.getEntityManager();
+		TypedQuery<Entidade> typedQuery = manager.createNamedQuery(pNamedQuery, pTipoRetorno);
+		Collection<Entidade> resultSet = typedQuery.getResultList();
+		
+		return resultSet;
 	}
 	
 }

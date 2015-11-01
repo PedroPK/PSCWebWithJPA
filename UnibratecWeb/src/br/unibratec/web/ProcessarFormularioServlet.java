@@ -1,15 +1,22 @@
 package br.unibratec.web;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Enumeration;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import br.unibratec.linhasaereas.entidades.Passageiro;
+import br.unibratec.linhasaereas.fachada.FachadaLinhasAereas;
+import br.unibratec.linhasaereas.fachada.IFachadaLinhasAereas;
+
+@WebServlet("/ProcessarFormulario")
 public class ProcessarFormularioServlet extends HttpServlet {
 
 	/**
@@ -17,12 +24,34 @@ public class ProcessarFormularioServlet extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -6677691519208193772L;
 
-	protected void service(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException, IOException {
+	protected void service(
+		HttpServletRequest pRequest, 
+		HttpServletResponse pResponse) 
+	throws ServletException, IOException {
+		if ( pRequest.getMethod().equalsIgnoreCase("POST") ) {
+			doPost(pRequest, pResponse);
+		} else {
+			pRequest
+				.getRequestDispatcher("htm/primeiroCadastro.html")
+				.forward(pRequest, pResponse);
+		}
+	}
+	
+	protected void doPost(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException, IOException {
 		processarParametros(pRequest);
 		processarCookie(pRequest, pResponse);
 		processarAtributosNaSessao(pRequest);
 		
-		pRequest.getRequestDispatcher("htm/primeiroCadastro.html").forward(pRequest, pResponse);
+		// 1º Cadastrar um novo Passageiro na Base de Dados
+		
+		// 2º Consultar a Base de Dados, redirecionar para uma outra JSP, que irá exibir o ResultSet
+		
+		IFachadaLinhasAereas fachada = new FachadaLinhasAereas();
+		Collection<Passageiro> passageiros = fachada.consultar();
+		
+		pRequest
+			.getRequestDispatcher("htm/primeiroCadastro.html")
+			.forward(pRequest, pResponse);
 	}
 	
 	/**
@@ -65,10 +94,14 @@ public class ProcessarFormularioServlet extends HttpServlet {
 		 */
 		HttpSession sessao = pRequest.getSession(true);
 		
-		sessao.getLastAccessedTime();
 		
-		Enumeration<String> nmAtributosSessao = 
-			sessao.getAttributeNames();
+		boolean isSessaoValida = isSessaoValida(sessao);
+		
+		String idSessao = sessao.getId();
+		sessao.setMaxInactiveInterval(300);
+		
+		Enumeration<String> nmAtributosSessao = sessao.getAttributeNames();
+		
 		while ( nmAtributosSessao != null && nmAtributosSessao.hasMoreElements() ) {
 			String nmAtributoAtualSessao = nmAtributosSessao.nextElement();
 			
@@ -95,6 +128,17 @@ public class ProcessarFormularioServlet extends HttpServlet {
 		}
 		
 		sessao.setAttribute("NomeDoAtributo", "Valor do Atributo colocado na Sessão");
+	}
+
+	private boolean isSessaoValida(HttpSession pSessao) {
+		boolean isSessaoValida = true;
+		try {
+			pSessao.getLastAccessedTime();
+		}
+		catch ( IllegalStateException iee ) {
+			isSessaoValida = false;
+		}
+		return isSessaoValida;
 	}
 	
 	/**
@@ -126,8 +170,9 @@ public class ProcessarFormularioServlet extends HttpServlet {
 
 	private void processarCookie(HttpServletRequest pRequest, HttpServletResponse pResponse) {
 		Cookie[] cookies = pRequest.getCookies();
-		if ( cookies == null || cookies.length == 0 ) {
+		if ( cookies == null || cookies.length < 2 ) {
 			gerarCookie(pResponse);
+			System.out.println("Cookie foi gerado.");
 		} else {
 			for (Cookie cookie : cookies) {
 				System.out.println("Cookie: " + cookie.toString());
@@ -153,8 +198,8 @@ public class ProcessarFormularioServlet extends HttpServlet {
 		 * Se um valor Negativo for usado, indicará que o Cookie será deletado quando o Navegador for fechado
 		 * O Valor Zero irá deletar o Cookie
 		 */
-		cookieEhBom.setMaxAge(300);
-		cookieEhBom.setComment("Comentário para o 1º Cookie");
+		cookieEhBom.setMaxAge(30);
+		cookieEhBom.setComment("Comentario para o primeiro Cookie");
 		
 		/*
 		 * Define se o Cookie deverá ser enviado somente via protocolos seguros, 
@@ -166,7 +211,7 @@ public class ProcessarFormularioServlet extends HttpServlet {
 		 * Evita que o Cookie seja exposto para Scripts do lado do cliente.
 		 * O objetivo é evitar alguns ataques do tipo XSS (Cross-site Script)
 		 */
-		cookieEhBom.setHttpOnly(false);
+		cookieEhBom.setHttpOnly(true);
 		
 		pResponse.addCookie(cookieEhBom);
 	}

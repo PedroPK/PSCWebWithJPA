@@ -1,5 +1,6 @@
 package br.unibratec.linhasaereas.controladores;
 
+import java.util.Collection;
 import java.util.Date;
 
 import br.unibratec.linhasaereas.entidades.Passageiro;
@@ -52,5 +53,10 @@ public class ControladorPassageiro implements IControladorPassageiro {
 		Passageiro registro = passageiroDAO.consultar(pChavePrimaria);
 		return registro;
 	}
-
+	
+	public Collection<Passageiro> consultar() {
+		IPassageiroDAO passageiroDAO = new PassageiroDAO();
+		return passageiroDAO.consultar();
+	}
+	
 }

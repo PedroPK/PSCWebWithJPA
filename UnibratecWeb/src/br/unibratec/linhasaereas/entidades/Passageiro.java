@@ -5,12 +5,18 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import br.unibratec.entidades.Entidade;
+import br.unibratec.linhasaereas.persistencia.PassageiroDAO;
 
 @Entity
+@NamedQuery(
+	name=PassageiroDAO.NAMED_QUERY_CONSULTAR_TODOS_PASSAGEIROS,
+	query="Select p From Passageiro p"
+)
 public class Passageiro implements Entidade {
 	
 	@Id

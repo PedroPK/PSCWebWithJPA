@@ -35,7 +35,7 @@ public class PRCadastroPassageiro extends HttpServlet {
 		pRequest.getRequestDispatcher("htm/cadastroPassageiros.html").forward(pRequest, pResponse);
 	}
 	
-	private StringBuffer getFormularioPassageiroHTML() {
+	private StringBuffer gerarHTMLFormularioPassageiro() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<html>");
 			sb.append("<body>");
