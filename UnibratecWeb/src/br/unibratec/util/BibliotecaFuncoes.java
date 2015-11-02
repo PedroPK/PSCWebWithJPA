@@ -18,7 +18,7 @@ import org.hibernate.service.internal.StandardServiceRegistryImpl;
 import br.unibratec.relacionamentos.manytomany.entidades.Aluno;
 
 public class BibliotecaFuncoes {
-
+	
 	public static boolean isStringValida(String pString) {
 		boolean resposta = false;
 		
@@ -126,5 +126,14 @@ public class BibliotecaFuncoes {
 		SessionFactory factory = configuracoes.buildSessionFactory(registro);
 		return factory;
 	}*/
+	
+	public static String getBooleanComoSimOuNao(boolean pBoolean) {
+		String resposta = "Não";
+		if ( pBoolean ) {
+			resposta = "Sim";
+		}
+		
+		return resposta;
+	}
 	
 }

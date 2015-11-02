@@ -28,7 +28,7 @@ public class Passageiro implements Entidade {
 	@Temporal(TemporalType.DATE)
 	private Date		aDataNascimento;
 	
-	@Column(
+	/*@Column(
 		name="NM_TESTE",
 		length=100,
 		unique=true,
@@ -39,7 +39,7 @@ public class Passageiro implements Entidade {
 		precision=2,
 		scale=2
 	)
-	private String testeColuna;
+	private String testeColuna;*/
 	
 	private boolean		aIsPortadorNecessidadesEspeciais;
 	

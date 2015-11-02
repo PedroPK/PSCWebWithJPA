@@ -15,43 +15,123 @@ import javax.servlet.http.HttpSession;
 import br.unibratec.linhasaereas.entidades.Passageiro;
 import br.unibratec.linhasaereas.fachada.FachadaLinhasAereas;
 import br.unibratec.linhasaereas.fachada.IFachadaLinhasAereas;
+import br.unibratec.linhasaereas.util.passageiro.ConstantesPassageiro;
+import br.unibratec.util.BibliotecaFuncoes;
+import br.unibratec.util.UtilJPA;
 
 @WebServlet("/ProcessarFormulario")
 public class ProcessarFormularioServlet extends HttpServlet {
-
+	
+	public static final String EVENTO_SALVAR = "EVENTO_SALVAR";
+	public static final String EVENTO_CONSULTAR = "EVENTO_CONSULTAR";
+	
+	public static final String REQ_EVENTO_SUBMISSAO_FORMULARIO = "REQ_EVENTO_SUBMISSAO_FORMULARIO";
+	public static final String REQ_PARAMETRO_TITULO_TELA = "REQ_PARAMETRO_TITULO_TELA";
+	public static final String REQ_RESULTSET_PASSAGEIROS = "REQ_RESULTSET_PASSAGEIROS";
+	
+	public static final String NM_REQ_NOME									= ConstantesPassageiro.ID_REQ_Nome;
+	public static final String NM_REQ_EMAIL									= ConstantesPassageiro.ID_REQ_eMail;
+	public static final String NM_REQ_CPF									= ConstantesPassageiro.ID_REQ_CPF;
+	public static final String NM_REQ_DT_NASCIMENTO							= ConstantesPassageiro.ID_REQ_DataNascimento;
+	public static final String NM_REQ_IS_PORTADOR_NECESSIDADES_ESPECIAIS	= ConstantesPassageiro.ID_REQ_IsPortadorNecessidadesEspeciais;
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6677691519208193772L;
+	
+	public void init(
+		HttpServletRequest		pRequest,
+		HttpServletResponse		pResponse
+	) {
+		UtilJPA.createEntityManagerFactory();
+	}
 
 	protected void service(
 		HttpServletRequest pRequest, 
 		HttpServletResponse pResponse) 
 	throws ServletException, IOException {
-		if ( pRequest.getMethod().equalsIgnoreCase("POST") ) {
+		if ( isMetodoDoPost(pRequest) ) {
 			doPost(pRequest, pResponse);
 		} else {
-			pRequest
-				.getRequestDispatcher("htm/primeiroCadastro.html")
-				.forward(pRequest, pResponse);
+			//pRequest.setAttribute(NM_REQ_PARAMETRO_TITULO_TELA, "Tela de Início");
+			redirecionar_CadastroPassageirosJSP(pRequest, pResponse);
 		}
 	}
 	
+	private boolean isMetodoDoPost(HttpServletRequest pRequest) {
+		return pRequest.getMethod().equalsIgnoreCase("POST");
+	}
+	
+	private void redirecionar_CadastroPassageirosJSP(HttpServletRequest pRequest, HttpServletResponse pResponse)
+	throws ServletException, IOException {
+		redirecionarJSP(pRequest, pResponse, "jsp/CadastroPassageirosV2.jsp");
+	}
+	
+	private void redirecionar_ConsultarPassageirosJSP(HttpServletRequest pRequest, HttpServletResponse pResponse)
+	throws ServletException, IOException {
+		redirecionarJSP(pRequest, pResponse, "jsp/ConsultarPassageirosV2.jsp");
+	}
+
+	private void redirecionarJSP(HttpServletRequest pRequest, HttpServletResponse pResponse, String pArquivoJSP)
+			throws ServletException, IOException {
+		pRequest
+			.getRequestDispatcher(pArquivoJSP)
+			.forward(pRequest, pResponse);
+	}
+	
 	protected void doPost(HttpServletRequest pRequest, HttpServletResponse pResponse) throws ServletException, IOException {
-		processarParametros(pRequest);
+		/*processarParametros(pRequest);
 		processarCookie(pRequest, pResponse);
-		processarAtributosNaSessao(pRequest);
+		processarAtributosNaSessao(pRequest);*/
+		
+		String evento = pRequest.getParameter(REQ_EVENTO_SUBMISSAO_FORMULARIO);
+		if ( evento.equals(EVENTO_CONSULTAR) ) {
+			consultarPassageiros(pRequest);
+			
+			redirecionar_ConsultarPassageirosJSP(pRequest, pResponse);
+		} else {
+			if ( evento.equals(EVENTO_SALVAR) ) {
+				String nome								= pRequest.getParameter(ConstantesPassageiro.ID_REQ_Nome);
+				String email							= pRequest.getParameter(ConstantesPassageiro.ID_REQ_eMail);
+				String cpf 								= pRequest.getParameter(ConstantesPassageiro.ID_REQ_CPF);
+				String dataNascimento					= pRequest.getParameter(ConstantesPassageiro.ID_REQ_DataNascimento);
+				String isPortadorNecessidadesEspeciais	= pRequest.getParameter(ConstantesPassageiro.ID_REQ_IsPortadorNecessidadesEspeciais);
+				
+				if ( 
+						BibliotecaFuncoes.isStringValida(nome)				&&
+						BibliotecaFuncoes.isStringValida(email)				&&
+						BibliotecaFuncoes.isStringValida(cpf)				&&
+						BibliotecaFuncoes.isStringValida(dataNascimento)		
+				) {
+					IFachadaLinhasAereas fachada = new FachadaLinhasAereas();
+					fachada.inserirPassageiro(
+						nome,
+						cpf,
+						email,
+						dataNascimento,
+						isPortadorNecessidadesEspeciais
+					);
+				}
+				
+				consultarPassageiros(pRequest);
+				
+				redirecionar_ConsultarPassageirosJSP(pRequest, pResponse);
+			} else {
+				redirecionar_CadastroPassageirosJSP(pRequest, pResponse);
+			}
+		}
 		
 		// 1º Cadastrar um novo Passageiro na Base de Dados
 		
 		// 2º Consultar a Base de Dados, redirecionar para uma outra JSP, que irá exibir o ResultSet
-		
+	}
+
+	private void consultarPassageiros(HttpServletRequest pRequest) {
 		IFachadaLinhasAereas fachada = new FachadaLinhasAereas();
 		Collection<Passageiro> passageiros = fachada.consultar();
 		
-		pRequest
-			.getRequestDispatcher("htm/primeiroCadastro.html")
-			.forward(pRequest, pResponse);
+		pRequest.setAttribute(REQ_RESULTSET_PASSAGEIROS, passageiros);
 	}
 	
 	/**

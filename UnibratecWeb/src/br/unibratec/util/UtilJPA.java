@@ -10,10 +10,18 @@ import org.hibernate.stat.Statistics;
 
 public class UtilJPA {
 	
-	private static final EntityManagerFactory emf = 
-		Persistence.createEntityManagerFactory(ConstantesGerais.PERSISTENCE_UNIT_UNIBRATEC);
+	private static EntityManagerFactory emf;
+	
+	public static void createEntityManagerFactory() {
+		if ( emf == null ) {
+			emf = Persistence.createEntityManagerFactory(ConstantesGerais.PERSISTENCE_UNIT_UNIBRATEC);
+		}
+	}
 	
 	public static EntityManager getEntityManager() {
+		if ( emf == null ) {
+			createEntityManagerFactory();
+		}
 		return emf.createEntityManager();
 	}
 	
