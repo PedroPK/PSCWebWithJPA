@@ -82,6 +82,10 @@ public class Passageiro implements Entidade {
 	public void setDataNascimento(Date pDataNascimento) {
 		this.aDataNascimento = pDataNascimento;
 	}
+	
+	public boolean getIsPortadorNecessidadesEspeciais() {
+		return isPortadorNecessidadesEspeciais();
+	}
 	public boolean isPortadorNecessidadesEspeciais() {
 		return aIsPortadorNecessidadesEspeciais;
 	}
